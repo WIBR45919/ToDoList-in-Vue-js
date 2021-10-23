@@ -1,82 +1,147 @@
 <template>
     <div class="content">
-        <div class="input">
+        <div class="input" :class="{ 'bg-black': isBlack, 'bg-aqua':isAqua, 'bg-purple':isPurple }">
             <InputTask @addTask="addTask"/>
             <div class="theme">
-                <span title="theme aqua"></span>
-                <span title="theme purple"></span>
-                <span title="theme black"></span>
+                <span title="theme aqua" @click="changeBg('Aqua')"></span>
+                <span title="theme purple" @click="changeBg('Purple')"></span>
+                <span title="theme black" @click="changeBg('Black')"></span>
+                <span title="theme white" @click="changeBg('white')"></span>
             </div>
         </div>
-        <div class="task">
-            <h2>Task List</h2>
-            <template v-for="(task, index) in newList" :key="task.id">
-                <Task :id="index+1" :description="task.description" :date="task.date" :isDone="false" @check="taskAlreadyDo"/>
-            </template>
+        <div class="task" :class="{ 'bg-black': isBlack, 'bg-aqua':isAqua, 'bg-purple':isPurple }">
+            <h2 :class="{ 'text-black': isBlack, 'text-aqua':isAqua, 'text-purple':isPurple }" v-show="taskDone.length !== 0">Task List</h2>
+            <p  :class="{ 'text-black': isBlack, 'text-aqua':isAqua, 'text-purple':isPurple }" class="placeholder" v-show="taskDone.length === 0">Veuillez entrer une tache !</p>
+
+              <template v-for="(task) in taskDone" :key="task.id">
+                  <TaskDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
+                            @check="taskAlreadyDo" @delete="deleteTask" @edit="editTask"/>
+              </template>
+
+            <h2  :class="{ 'text-black': isBlack, 'text-aqua':isAqua, 'text-purple':isPurple }" v-show="taskNotDone.length !== 0">Already Doing</h2>
+
+                <template v-for="(task) in taskNotDone" :key="task.id">
+                    <TaskNotDo :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
+                               @check="taskAlreadyDo"  @delete="deleteTask"/>
+                </template>
+
         </div>
     </div>
 </template>
 
 <script>
-import Task from "./Task";
+import TaskDone from "./TaskDone";
 import InputTask from "./InputTask";
+import TaskNotDo from "./TaskNotDo";
 
-import { ref, computed } from 'vue';
+import { ref,computed } from 'vue';
 
 export default {
     name: "Todo",
     components:{
-            Task,InputTask
+            TaskDone,InputTask,TaskNotDo
     },
-
     setup(){
         const task = ref('')
         const tabList = ref([])
-        const tabListDo = ref([])
-        const takeDate = new Date()
+        const isBlack = ref(false)
+        const isPurple = ref(false)
+        const isAqua = ref(false)
+        const isNormal = ref(false)
 
         function addTask(addtask){
             const index = tabList.value.length
-            console.log(addtask.value)
-            if(tabList.value.length !== 0){
+            if(addtask.length !== ""){
                 tabList.value.push({
                     id: (index+1),
-                    description: addtask.value,
+                    description: addtask,
                     date: getTaskDate(),
                     isDone: false
                 })
-                console.log(tabList)
                 return tabList
             }
             return false
+
         }
-        function changeState(id) {
-            const index = tabList.value.findIndex(one => one.id === id);
-            console.log(index)
-            const elt = tabList.value.splice(index, 1);
-            console.log(tabList.value);
-            console.log(elt)
-            //ADD in a corresponding tab
-            tabListDo.value.push(...elt)
+        function deleteTask(id){
+          const index = tabList.value.findIndex(elt => elt.id === id);
+          tabList.value.splice(index, 1);
+        }
+        function editTask(id){
+        const Taskedit = tabList.value.map(elt=> {
+            if(elt.id === id){
+              return{
+                ...elt,
+                type: 'edit'
+              }
+            }
+          })
+          console.log(Taskedit)
+          console.log('Edit : ' + id)
+        }
+        function changeStateToCheck(id) {
+            tabList.value = tabList.value.map(elt => {
+              if(elt.id === id){
+                return ref({
+                  ...elt,
+                  isDone: true
+                }).value
+              }
+              return elt
+            })
+        }
+        function changeStateToUncheck(id){
+          tabList.value = tabList.value.map(elt => {
+            if(elt.id === id){
+              return ref({
+                ...elt,
+                isDone: false
+              }).value
+            }
+            return elt
+          })
         }
 
+        const taskDone = computed(function () {
+            return tabList.value.filter(elt => elt.isDone === false)
+        })
+        const taskNotDone = computed(function () {
+            return tabList.value.filter(elt => elt.isDone === true)
+        })
         function getTaskDate() {
-            return `${ takeDate.toDateString() } - ${ takeDate.getHours() }h:${ takeDate.getMinutes() }min:${ takeDate.getSeconds() }s`
+            return `${ new Date().toDateString() } - ${ new Date().getHours() }h:${ new Date().getMinutes() }min:${ new Date().getSeconds() }s`
         }
-        const newList = computed(function () {
-             return addTask(tabList,task).value?.filter(fil => fil.isDone !== true)
-         })
-        function taskAlreadyDo(id) {
-            changeState(id)
-            console.log(tabListDo.value);
+        function changeBg(color){
+          if (color === "Black") {
+            isBlack.value = true
+            isAqua.value = false
+            isPurple.value = false
+          }
+          if (color === "Purple") {
+            isBlack.value = false
+            isAqua.value = false
+            isPurple.value = true
+          }
+          if (color === "Aqua") {
+            isBlack.value = false
+            isAqua.value = true
+            isPurple.value = false
+          }
+          if (color === "white") {
+            isBlack.value = false
+            isAqua.value = false
+            isPurple.value = false
+          }
+        }
+
+        function taskAlreadyDo(id,eventType) {
+          if(eventType === "checked") changeStateToCheck(id)
+          else changeStateToUncheck(id)
         }
 
         return{
-            task,
-            newList,
-            tabListDo,
-            addTask,
-            taskAlreadyDo
+            task, taskDone, taskNotDone, addTask, deleteTask, editTask,
+            taskAlreadyDo, isBlack, isPurple, isAqua, isNormal, changeBg
         }
     }
 }
@@ -111,11 +176,37 @@ export default {
     .theme span:nth-child(3){
         background-color: black;
     }
+    .theme span:nth-child(4){
+      background-color: whitesmoke;
+    }
     .task{
         padding: 10px 15px;
     }
     .task h2{
         color: #3f7676;
         font-family: Roboto;
+    }
+    .placeholder{
+      text-align: center;
+      color: gray;
+      font-size: 15px;
+    }
+    .bg-black{
+      background-color: #131313;
+    }
+    .bg-purple{
+      background-color: #6724f1;
+    }
+    .bg-aqua{
+      background-color: #9ae7cc;
+    }
+    .text-black{
+      color: white!important;
+    }
+    .text-purple{
+      color: white!important;
+    }
+    .text-aqua{
+      color: #282626!important;
     }
 </style>

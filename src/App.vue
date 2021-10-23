@@ -19,6 +19,7 @@ export default {
     Todo
   }
 }
+//todo: Regrouper toutes les fonctionnalités dupliquées et réutilisables dans un seul fichier
 </script>
 
 <style>
@@ -27,12 +28,13 @@ export default {
     padding: 0;
   }
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Roboto,Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   background: #e0e0e0;
   position: relative;
+  transition: all 0.3s;
 }
   .parent{
     display: flex;
@@ -92,11 +94,10 @@ export default {
           display: none;
       }
   }
-
-h2{
-  color: #3f7676;
-  font-family: Roboto;
-}
+  h2{
+      color: #3f7676;
+      font-family: Roboto;
+  }
   .todo{
       display: flex;
       justify-content: space-between;
@@ -107,6 +108,7 @@ h2{
       -20px -20px 40px #ffffff;
       border-radius: 3px;
       padding: 10px;
+      transition: all 0.3s;
   }
   .todo .check{
       padding: 10px;
