@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <div class="input" :class="{ 'bg-black': isBlack, 'bg-aqua':isAqua, 'bg-purple':isPurple }">
-            <InputTask :value="editValue" @addTask="addTask" :id="editId" :enterTask="editValue"/>
+            <InputTask v-model:userTask="task" @addTask="addTask" :id="editId" />
             <div class="theme">
                 <span title="theme aqua" @click="changeBg('Aqua')"></span>
                 <span title="theme purple" @click="changeBg('Purple')"></span>
@@ -46,29 +46,28 @@ export default {
         // TODO: Group every same functionalities to this Application in a other file
         const task = ref('')
         const tabList = ref([])
-        const editValue = ref('')
         const editId = ref(0)
         const isBlack = ref(false)
         const isPurple = ref(false)
         const isAqua = ref(false)
         const isNormal = ref(false)
 
-        function addTask(addtask, id){
-          console.log(id)
+        function addTask(id){
           if (id === 0){
             const index = tabList.value.length
-            if(addtask.length !== ""){
+            if(task.value.length !== ""){
               tabList.value.push({
                 id: (index+1),
-                description: addtask,
+                description: task.value,
                 date: getTaskDate(),
                 isDone: false
               })
+              task.value = ""
               return tabList
             }
             return false
           }else {
-            editTask(id, addtask)
+            editTask(id, task.value)
           }
 
         }
@@ -77,7 +76,7 @@ export default {
           tabList.value.splice(index, 1);
         }
         function detectEdit(id, addtask){
-          editValue.value = addtask
+          task.value = addtask
           editId.value = id
         }
         function editTask(id, description){
@@ -153,7 +152,7 @@ export default {
         }
 
         return{
-            task, taskDone, taskNotDone, deleteTask,editValue,addTask,detectEdit,
+            task, taskDone, taskNotDone, deleteTask,addTask,detectEdit,
             taskAlreadyDo, isBlack, isPurple, isAqua, isNormal, changeBg,editId
         }
     }
