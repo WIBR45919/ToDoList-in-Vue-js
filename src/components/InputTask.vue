@@ -10,18 +10,27 @@
 </template>
 
 <script>
-    import { ref,inject } from 'vue';
+import { ref } from 'vue';
 
     export default {
         name: "InputTask",
+        props: {
+          id:{
+            type: Number,
+            defaultValue: 0
+          },
+          enterTask:{
+            type: String,
+            defaultValue: ""
+          }
+        },
         emits:['addTask'],
         setup(props,{ emit }){
-            const enter = ref('');
-            enter.value = inject('Value', '')
+            const enter = ref('')
 
             function sendTask() {
                 if (enter.value.trim().length !== 0) {
-                    emit('addTask', enter.value);
+                    emit('addTask', enter.value, props.id);
                 }
                 enter.value = "";
             }
