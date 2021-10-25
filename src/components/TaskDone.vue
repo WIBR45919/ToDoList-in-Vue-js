@@ -54,7 +54,7 @@
             emit('delete', props.id);
           }
           const editTask = () => {
-            emit('edit', props.id, props.description);
+            emit('edit',props.description);
           }
 
             return{
