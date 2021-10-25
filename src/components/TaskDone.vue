@@ -47,13 +47,13 @@
         emits:['check','delete','edit'],
         setup(props, { emit }){
 
-            function taskDo() {
-              emit('check', props.id, "checked");
-            }
-            function deleteTask() {
-              emit('delete', props.id);
-            }
-          function editTask() {
+          const taskDo = () => {
+            emit('check', props.id, "checked");
+          }
+          const deleteTask = () => {
+            emit('delete', props.id);
+          }
+          const editTask = () => {
             emit('edit', props.id, props.description);
           }
 

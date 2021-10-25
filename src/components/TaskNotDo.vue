@@ -36,12 +36,12 @@
                 defaultValue: false
             }
         },
-      emits:['check','delete'],
+        emits:['check','delete'],
       setup(props, { emit }){
-        function taskDo() {
+        const taskDo = () => {
           emit('check', props.id, "unchecked");
         }
-        function deleteTask() {
+        const deleteTask = () => {
           emit('delete', props.id);
         }
 

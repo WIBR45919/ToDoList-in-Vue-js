@@ -1,24 +1,24 @@
 <template>
     <div class="content">
-        <div class="input" :class="{ 'bg-black': isBlack, 'bg-aqua':isAqua, 'bg-purple':isPurple }">
+        <div class="input" :class="choiseBg">
             <InputTask v-model:userTask="task" @addTask="addTask" :id="editId" />
             <div class="theme">
                 <span title="theme aqua" @click="changeBg('Aqua')"></span>
                 <span title="theme purple" @click="changeBg('Purple')"></span>
                 <span title="theme black" @click="changeBg('Black')"></span>
-                <span title="theme white" @click="changeBg('white')"></span>
+                <span title="theme white" @click="changeBg('Normal')"></span>
             </div>
         </div>
-        <div class="task" :class="{ 'bg-black': isBlack, 'bg-aqua':isAqua, 'bg-purple':isPurple }">
-            <h2 :class="{ 'text-black': isBlack, 'text-aqua':isAqua, 'text-purple':isPurple }" v-show="taskDone.length !== 0">Task List</h2>
-            <p  :class="{ 'text-black': isBlack, 'text-aqua':isAqua, 'text-purple':isPurple }" class="placeholder" v-show="taskDone.length === 0">Veuillez entrer une tache !</p>
+        <div class="task" :class="choiseBg">
+            <h2 :class="choiseBg" v-show="taskDone.length !== 0">Task List</h2>
+            <p :class="choiseBg" class="placeholder" v-show="taskDone.length === 0">Veuillez entrer une tache !</p>
 
               <template v-for="(task) in taskDone" :key="task.id">
                   <TaskDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
                             @check="taskAlreadyDo" @delete="deleteTask" @edit="detectEdit"/>
               </template>
 
-            <h2  :class="{ 'text-black': isBlack, 'text-aqua':isAqua, 'text-purple':isPurple }" v-show="taskNotDone.length !== 0">Already Doing</h2>
+            <h2 :class="choiseBg" v-show="taskNotDone.length !== 0">Already Doing</h2>
 
                 <template v-for="(task) in taskNotDone" :key="task.id">
                     <TaskNotDo :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
@@ -34,7 +34,7 @@ import TaskDone from "./TaskDone";
 import InputTask from "./InputTask";
 import TaskNotDo from "./TaskNotDo";
 
-import {ref, computed } from 'vue';
+import {ref, computed, reactive } from 'vue';
 
 export default {
     name: "Todo",
@@ -44,15 +44,29 @@ export default {
     setup(){
         //TODO: add an Edit task function later
         // TODO: Group every same functionalities to this Application in a other file
+        // TODO: Use arrow function everywhere instead of normal function
+        //TODO: use an data object for my bg-color
         const task = ref('')
         const tabList = ref([])
         const editId = ref(0)
-        const isBlack = ref(false)
-        const isPurple = ref(false)
-        const isAqua = ref(false)
-        const isNormal = ref(false)
+        const bgObject = reactive({
+            Black: [
+              'bg-black',
+              'text-black'
+            ],
+            Purple:  [
+              'bg-purple',
+              'text-purple'
+            ],
+            Aqua:  [
+              'bg-aqua',
+              'text-aqua'
+            ],
+            Normal: ''
+        })
+        let choiseBg = ref([]);
 
-        function addTask(id){
+        const addTask = (id) =>{
           if (id === 0){
             const index = tabList.value.length
             if(task.value.length !== ""){
@@ -71,15 +85,15 @@ export default {
           }
 
         }
-        function deleteTask(id){
+        const deleteTask = (id) =>{
           const index = tabList.value.findIndex(elt => elt.id === id);
           tabList.value.splice(index, 1);
         }
-        function detectEdit(id, addtask){
+        const detectEdit = (id, addtask) =>{
           task.value = addtask
           editId.value = id
         }
-        function editTask(id, description){
+        const editTask = (id, description) =>{
           tabList.value = tabList.value.map(elt => {
             if(elt.id === id){
               return ref({
@@ -91,7 +105,7 @@ export default {
           })
           detectEdit(0,"");
         }
-        function changeStateToCheck(id) {
+        const changeStateToCheck = (id) => {
             tabList.value = tabList.value.map(elt => {
               if(elt.id === id){
                 return ref({
@@ -102,7 +116,7 @@ export default {
               return elt
             })
         }
-        function changeStateToUncheck(id){
+        const changeStateToUncheck = (id) =>{
           tabList.value = tabList.value.map(elt => {
             if(elt.id === id){
               return ref({
@@ -120,40 +134,20 @@ export default {
         const taskNotDone = computed(function () {
             return tabList.value.filter(elt => elt.isDone === true)
         })
-        function getTaskDate() {
+        const getTaskDate = () => {
             return `${ new Date().toDateString() } - ${ new Date().getHours() }h:${ new Date().getMinutes() }min:${ new Date().getSeconds() }s`
         }
-        function changeBg(color){
-          if (color === "Black") {
-            isBlack.value = true
-            isAqua.value = false
-            isPurple.value = false
-          }
-          if (color === "Purple") {
-            isBlack.value = false
-            isAqua.value = false
-            isPurple.value = true
-          }
-          if (color === "Aqua") {
-            isBlack.value = false
-            isAqua.value = true
-            isPurple.value = false
-          }
-          if (color === "white") {
-            isBlack.value = false
-            isAqua.value = false
-            isPurple.value = false
-          }
+        const changeBg = (color)=>{
+          choiseBg.value = bgObject[color]
         }
-
-        function taskAlreadyDo(id,eventType) {
+        const taskAlreadyDo = (id,eventType) => {
           if(eventType === "checked") changeStateToCheck(id)
           else changeStateToUncheck(id)
         }
 
         return{
             task, taskDone, taskNotDone, deleteTask,addTask,detectEdit,
-            taskAlreadyDo, isBlack, isPurple, isAqua, isNormal, changeBg,editId
+            taskAlreadyDo, changeBg,editId,choiseBg
         }
     }
 }
