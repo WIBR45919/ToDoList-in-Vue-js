@@ -28,12 +28,12 @@ import { ref } from 'vue';
         setup(props,{ emit }){
             const enter = ref('')
 
-            function sendTask() {
+            const sendTask = ()=> {
                 if (props.userTask.trim().length !== 0) {
                     emit('addTask', props.id);
                 }
             }
-            function doubleBindTask($event){
+            const doubleBindTask = ($event) =>{
               emit('update:userTask', $event.target.value)
             }
             return{
