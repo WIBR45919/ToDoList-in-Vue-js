@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <div class="input" :class="{ 'bg-black': isBlack, 'bg-aqua':isAqua, 'bg-purple':isPurple }">
-            <InputTask @addTask="addTask"/>
+            <InputTask v-model:userTask="task" @addTask="addTask" :id="editId" />
             <div class="theme">
                 <span title="theme aqua" @click="changeBg('Aqua')"></span>
                 <span title="theme purple" @click="changeBg('Purple')"></span>
@@ -15,7 +15,7 @@
 
               <template v-for="(task) in taskDone" :key="task.id">
                   <TaskDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
-                            @check="taskAlreadyDo" @delete="deleteTask" @edit="editTask"/>
+                            @check="taskAlreadyDo" @delete="deleteTask" @edit="detectEdit"/>
               </template>
 
             <h2  :class="{ 'text-black': isBlack, 'text-aqua':isAqua, 'text-purple':isPurple }" v-show="taskNotDone.length !== 0">Already Doing</h2>
@@ -34,7 +34,7 @@ import TaskDone from "./TaskDone";
 import InputTask from "./InputTask";
 import TaskNotDo from "./TaskNotDo";
 
-import { ref,computed } from 'vue';
+import {ref, computed } from 'vue';
 
 export default {
     name: "Todo",
@@ -42,42 +42,54 @@ export default {
             TaskDone,InputTask,TaskNotDo
     },
     setup(){
+        //TODO: add an Edit task function later
+        // TODO: Group every same functionalities to this Application in a other file
         const task = ref('')
         const tabList = ref([])
+        const editId = ref(0)
         const isBlack = ref(false)
         const isPurple = ref(false)
         const isAqua = ref(false)
         const isNormal = ref(false)
 
-        function addTask(addtask){
+        function addTask(id){
+          if (id === 0){
             const index = tabList.value.length
-            if(addtask.length !== ""){
-                tabList.value.push({
-                    id: (index+1),
-                    description: addtask,
-                    date: getTaskDate(),
-                    isDone: false
-                })
-                return tabList
+            if(task.value.length !== ""){
+              tabList.value.push({
+                id: (index+1),
+                description: task.value,
+                date: getTaskDate(),
+                isDone: false
+              })
+              task.value = ""
+              return tabList
             }
             return false
+          }else {
+            editTask(id, task.value)
+          }
 
         }
         function deleteTask(id){
           const index = tabList.value.findIndex(elt => elt.id === id);
           tabList.value.splice(index, 1);
         }
-        function editTask(id){
-        const Taskedit = tabList.value.map(elt=> {
+        function detectEdit(id, addtask){
+          task.value = addtask
+          editId.value = id
+        }
+        function editTask(id, description){
+          tabList.value = tabList.value.map(elt => {
             if(elt.id === id){
-              return{
+              return ref({
                 ...elt,
-                type: 'edit'
-              }
+                description: description
+              }).value
             }
+            return elt
           })
-          console.log(Taskedit)
-          console.log('Edit : ' + id)
+          detectEdit(0,"");
         }
         function changeStateToCheck(id) {
             tabList.value = tabList.value.map(elt => {
@@ -140,8 +152,8 @@ export default {
         }
 
         return{
-            task, taskDone, taskNotDone, addTask, deleteTask, editTask,
-            taskAlreadyDo, isBlack, isPurple, isAqua, isNormal, changeBg
+            task, taskDone, taskNotDone, deleteTask,addTask,detectEdit,
+            taskAlreadyDo, isBlack, isPurple, isAqua, isNormal, changeBg,editId
         }
     }
 }
@@ -184,7 +196,6 @@ export default {
     }
     .task h2{
         color: #3f7676;
-        font-family: Roboto;
     }
     .placeholder{
       text-align: center;
