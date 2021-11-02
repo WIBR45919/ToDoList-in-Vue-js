@@ -28,15 +28,18 @@
         props:{
             id:{
                 type: Number,
-                required: true
+                required: true,
+                defaultValue: 0,
             },
             description:{
                 type: String,
-                required: true
+                required: true,
+                defaultValue: ''
             },
             date:{
                 type: String,
-                required: true
+                required: true,
+                defaultValue: ''
             },
             isDone:{
                 type: Boolean,
