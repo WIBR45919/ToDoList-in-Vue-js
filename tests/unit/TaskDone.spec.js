@@ -11,7 +11,6 @@ describe('Task Done component', ()=>{
         expect(emitCheck.exists()).toBe(true)
         await emitCheck.trigger('change')
         expect(wrapper.emitted('check')[0]).toEqual([wrapper.props('id'),'checked'])
-        expect(emitCheck)
     });
 
      it('should emit when task has deleted',  async () => {

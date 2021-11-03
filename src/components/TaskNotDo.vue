@@ -4,10 +4,10 @@
         <input type="checkbox" @change="taskDo" :checked="isDone">
     </div>
     <div class="description-task">
-        <p class="overline"> {{ description }}  <span class="date">{{ date }}</span></p>
+        <p class="line-through"> {{ description }}  <span class="date">{{ date }}</span></p>
     </div>
     <div class="actions">
-        <span title="Delete" @click="deleteTask">
+        <span title="Delete" @click="deleteTask" id="delete">
              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="darkred"><path d="M0 0h24v24H0z" fill="none"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11H7v-2h10v2z"/></svg>
         </span>
     </div>
@@ -33,7 +33,7 @@
             isDone:{
                 type: Boolean,
                 required: true,
-                defaultValue: false
+                defaultValue: true
             }
         },
         emits:['check','delete'],
@@ -55,7 +55,7 @@
 
 <style scoped>
 
-.overline {
+.line-through {
     text-decoration: line-through;
 }
 .do{
