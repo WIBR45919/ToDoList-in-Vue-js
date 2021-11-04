@@ -26,7 +26,7 @@
                 type: String,
                 required: true
             },
-            date:{
+           date:{
                 type: String,
                 required: true
             },

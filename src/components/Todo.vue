@@ -125,7 +125,7 @@ export default {
 
         return{
             taskDone, taskNotDone, deleteTask,addTask,detectEdit,
-            taskAlreadyDo, changeBg,choiseBg,tabList
+            taskAlreadyDo, changeBg,choiseBg
         }
     }
 }

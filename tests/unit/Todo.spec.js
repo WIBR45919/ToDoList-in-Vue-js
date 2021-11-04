@@ -9,13 +9,16 @@ describe('Todo component tests', ()=>{
     })
 
     it('if this should display the tasks not yet done', async ()=>{
-       const wrapper = mount(Todo)
-       expect(wrapper.findComponent({ name: 'TaskDone' }).exists()).toBe(false)
+        const wrapper = mount(Todo)
+        expect(wrapper.findComponent({ name: 'TaskDone' }).exists()).toBe(false)
        expect(wrapper.findComponent({ name: 'TaskNotDone' }).exists()).toBe(false)
        await wrapper.vm.addTask('Task 1')
-       await wrapper.vm.addTask('Task 2')
+       expect(wrapper.findComponent({ name: 'TaskNotDone' }).props('id')).toBe(1)
+       expect(wrapper.findComponent({ name: 'TaskNotDone' }).props('description')).toMatch('Task 1')
+       expect(wrapper.findComponent({ name: 'TaskNotDone' }).props('isDone')).toBeFalsy()
        expect(wrapper.findAllComponents({ name: 'TaskDone' }).length).toBe(0)
-       expect(wrapper.findAllComponents({ name: 'TaskNotDone' }).length).toBe(2)
+       expect(wrapper.findAllComponents({ name: 'TaskNotDone' }).length).toBe(1)
+
     })
 
     it('if this should display the tasks already done', async ()=>{
@@ -24,8 +27,14 @@ describe('Todo component tests', ()=>{
         expect(wrapper.findComponent({ name: 'TaskNotDone' }).exists()).toBe(false)
         await wrapper.vm.addTask('Task 4')
         await wrapper.vm.addTask('Task 3')
+        expect(wrapper.findComponent({ name: 'TaskNotDone' }).props('id')).toBe(1)
+        expect(wrapper.findComponent({ name: 'TaskNotDone' }).props('description')).toMatch('Task 4')
+        expect(wrapper.findComponent({ name: 'TaskNotDone' }).props('isDone')).toBeFalsy()
         await wrapper.vm.taskAlreadyDo(1, 'checked')
         await wrapper.vm.taskAlreadyDo(2, 'checked')
+        expect(wrapper.findComponent({ name: 'TaskDone' }).props('id')).toBe(1)
+        expect(wrapper.findComponent({ name: 'TaskDone' }).props('description')).toMatch('Task 4')
+        expect(wrapper.findComponent({ name: 'TaskDone' }).props('isDone')).toBeTruthy()
         expect(wrapper.findAllComponents({ name: 'TaskDone' }).length).toBe(2)
         expect(wrapper.findAllComponents({ name: 'TaskNotDone' }).length).toBe(0)
     })
