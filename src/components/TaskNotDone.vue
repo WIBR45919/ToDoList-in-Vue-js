@@ -22,51 +22,52 @@
   </div>
 </template>
 
-<script>
-    export default {
-        name: "TaskNotDone",
-        props:{
-            id:{
-                type: Number,
-                required: true,
-                defaultValue: 0,
-            },
-            description:{
-                type: String,
-                required: true,
-                defaultValue: ''
-            },
-            date:{
-                type: String,
-                required: true,
-                defaultValue: ''
-            },
-            isDone:{
-                type: Boolean,
-                required: true,
-                defaultValue: false
-            }
+<script lang="ts">
+import {defineComponent} from "vue";
+export default defineComponent({
+    name: "TaskNotDone",
+    props:{
+        id:{
+            type: Number,
+            required: true,
+            defaultValue: 0,
         },
-        emits:['check','delete','edit'],
-        setup(props, { emit }){
+        description:{
+            type: String,
+            required: true,
+            defaultValue: ''
+        },
+        date:{
+            type: String,
+            required: true,
+            defaultValue: ''
+        },
+        isDone:{
+            type: Boolean,
+            required: true,
+            defaultValue: false
+        }
+    },
+    emits:['check','delete','edit'],
+    setup(props, { emit }){
 
-          const taskDo = () => {
-            emit('check', props.id, "checked");
-          }
-          const deleteTask = () => {
-            emit('delete', props.id);
-          }
-          const editTask = () => {
-            emit('edit',props.description);
-          }
+      const taskDo = () => {
+        emit('check', props.id, "checked");
+      }
+      const deleteTask = () => {
+        emit('delete', props.id);
+      }
+      const editTask = () => {
+        emit('edit',props.description);
+      }
 
-            return{
-              taskDo,
-              deleteTask,
-              editTask,
-            }
+        return{
+          taskDo,
+          deleteTask,
+          editTask,
         }
     }
+});
 </script>
 
 <style scoped>

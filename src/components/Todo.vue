@@ -29,23 +29,26 @@
     </div>
 </template>
 
-<script>
-import TaskDone from "./TaskDone";
-import InputTask from "./InputTask";
-import TaskNotDone from "./TaskNotDone";
+<script lang="ts">
+import { defineComponent} from "vue";
 
-import {ref, computed, reactive } from 'vue';
+import TaskDone from "@/components/TaskDone.vue";
+import InputTask from "@/components/InputTask.vue";
+import TaskNotDone from "@/components/TaskNotDone.vue";
+import {TaskModel} from "@/TaskModel";
 
-export default {
-    name: "Todo",
+import { computed, reactive } from 'vue';
+
+export default defineComponent({
+    name: 'Todo',
     components:{
             TaskDone,InputTask,TaskNotDone
     },
     setup(){
         //TODO: add an Edit task function later
         // TODO: Group every same functionalities to this Application in a other file
-        const tabList = ref([])
-        const bgObject = reactive({
+        let tabList = reactive<TaskModel[]>([]);
+        const bgObject = {
             Black: [
               'bg-black',
               'text-black'
@@ -58,69 +61,74 @@ export default {
               'bg-aqua',
               'text-aqua'
             ],
-            Normal: ''
-        })
-        let choiseBg = ref([]);
+            Normal: ['']
+        }
+        let choiseBg = reactive<string[]>([]);
 
-        const addTask = (task) =>{
-            const index = tabList.value.length
-            if(task.length !== ""){
-              tabList.value.push({
-                id: (index+1),
+        const addTask = (task: string) =>{
+            const index = tabList.length
+            if(task.length !== 0) {
+              tabList.push({
+                id: (index + 1),
                 description: task,
                 date: getTaskDate(),
                 isDone: false
               })
-              return tabList
             }
-            return false
+          console.log(tabList)
         }
-        const deleteTask = (id) =>{
-          const index = tabList.value.findIndex(elt => elt.id === id);
-          tabList.value.splice(index, 1);
+        const deleteTask = (id: number) =>{
+          const index = tabList.findIndex(elt => elt.id === id);
+          tabList.splice(index, 1);
         }
-        const detectEdit = (addtask) =>{
+        const detectEdit = (addtask: string) =>{
           console.log(`task: ${ addtask }`);
         }
 
-        const changeStateToCheck = (id) => {
-            tabList.value = tabList.value.map(elt => {
+        const changeStateToCheck = (id: number) => {
+            tabList = reactive(tabList.map(elt => {
               if(elt.id === id){
-                return ref({
+                return {
                   ...elt,
                   isDone: true
-                }).value
+                }
               }
-              return elt
-            })
+              return { ...elt }
+            }))
+          console.log(tabList)
         }
-        const changeStateToUncheck = (id) =>{
-          tabList.value = tabList.value.map(elt => {
+        const changeStateToUncheck = (id: number) =>{
+          tabList = reactive(tabList.map(elt => {
             if(elt.id === id){
-              return ref({
+              return {
                 ...elt,
                 isDone: false
-              }).value
+              }
             }
-            return elt
-          })
+            return { ...elt }
+          }))
+          console.log(tabList)
         }
 
-        const taskNotDone = computed(function () {
-            return tabList.value.filter(elt => elt.isDone === false)
+        const taskNotDone = computed( (): TaskModel[] => {
+            return tabList.filter(elt => !elt.isDone)
         })
-        const taskDone = computed(function () {
-            return tabList.value.filter(elt => elt.isDone === true)
+        const taskDone = computed((): TaskModel[] => {
+            return tabList.filter(elt => elt.isDone)
         })
         const getTaskDate = () => {
             return `${ new Date().toDateString() } - ${ new Date().getHours() }h:${ new Date().getMinutes() }min:${ new Date().getSeconds() }s`
         }
-        const changeBg = (color)=>{
-          choiseBg.value = bgObject[color]
+        const changeBg = (color:string = "Normal")=>{
+          choiseBg = bgObject['Normal']
+          console.log(color)
         }
-        const taskAlreadyDo = (id,eventType) => {
-          if(eventType === "checked") changeStateToCheck(id)
-          else changeStateToUncheck(id)
+        const taskAlreadyDo = (id: number,eventType: string) => {
+
+          if(eventType === "checked")
+            changeStateToCheck(id)
+          else
+            changeStateToUncheck(id)
         }
 
         return{
@@ -128,7 +136,7 @@ export default {
             taskAlreadyDo, changeBg,choiseBg
         }
     }
-}
+});
 </script>
 
 <style scoped>

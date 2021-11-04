@@ -9,27 +9,28 @@
    </div>
 </template>
 
-<script>
+<script lang="ts">
 import { ref } from 'vue';
+import {defineComponent} from "vue";
 
-    export default {
-        name: "InputTask",
-        emits:['addTask'],
-        setup(props,{ emit }){
-            const enter = ref('')
+export default defineComponent({
+    name: "InputTask",
+    emits:['addTask'],
+    setup(props,{ emit }){
+        const enter = ref<String>('')
 
-            const sendTask = ()=> {
-                if (enter.value.trim().length !== 0) {
-                    emit('addTask', enter.value);
-                    enter.value = ""
-                }
-            }
-            return{
-                enter,
-                sendTask,
+        const sendTask = ()=> {
+            if (enter.value.trim().length !== 0) {
+                emit('addTask', enter.value);
+                enter.value = ""
             }
         }
+        return{
+            enter,
+            sendTask,
+        }
     }
+});
 </script>
 
 <style scoped>

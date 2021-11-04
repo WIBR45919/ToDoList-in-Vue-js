@@ -14,43 +14,45 @@
 </div>
 </template>
 
-<script>
-    export default {
-        name: "TaskDone",
-        props:{
-            id:{
-                type: Number,
-                required: true
-            },
-            description:{
-                type: String,
-                required: true
-            },
-           date:{
-                type: String,
-                required: true
-            },
-            isDone:{
-                type: Boolean,
-                required: true,
-                defaultValue: true
-            }
-        },
-        emits:['check','delete'],
-      setup(props, { emit }){
-        const taskDo = () => {
-          emit('check', props.id, "unchecked");
-        }
-        const deleteTask = () => {
-          emit('delete', props.id);
-        }
+<script lang="ts">
+import {defineComponent} from "vue";
 
-        return{
-          taskDo,
-          deleteTask
+export default defineComponent({
+    name: "TaskDone",
+    props:{
+        id:{
+            type: Number,
+            required: true
+        },
+        description:{
+            type: String,
+            required: true
+        },
+       date:{
+            type: String,
+            required: true
+        },
+        isDone:{
+            type: Boolean,
+            required: true,
+            defaultValue: true
         }
-      }
+    },
+    emits:['check','delete'],
+  setup(props, { emit }){
+    const taskDo = () => {
+      emit('check', props.id, "unchecked");
     }
+    const deleteTask = () => {
+      emit('delete', props.id);
+    }
+
+    return{
+      taskDo,
+      deleteTask
+    }
+  }
+});
 </script>
 
 <style scoped>
