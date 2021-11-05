@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <div class="input" :class="choiseBg">
-            <InputTask v-model:userTask="task" @addTask="addTask" :id="editId" />
+            <InputTask  @addTask="addTask" />
             <div class="theme">
                 <span title="theme aqua" @click="changeBg('Aqua')"></span>
                 <span title="theme purple" @click="changeBg('Purple')"></span>
@@ -10,18 +10,18 @@
             </div>
         </div>
         <div class="task" :class="choiseBg">
-            <h2 :class="choiseBg" v-show="taskDone.length !== 0">Task List</h2>
-            <p :class="choiseBg" class="placeholder" v-show="taskDone.length === 0">Veuillez entrer une tache !</p>
+            <h2 :class="choiseBg" v-show="taskNotDone.length !== 0">Task List</h2>
+            <p :class="choiseBg" class="placeholder" v-show="taskNotDone.length === 0">Veuillez entrer une tache !</p>
 
-              <template v-for="(task) in taskDone" :key="task.id">
-                  <TaskDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
+              <template v-for="task in taskNotDone" :key="task.id">
+                  <TaskNotDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
                             @check="taskAlreadyDo" @delete="deleteTask" @edit="detectEdit"/>
               </template>
 
-            <h2 :class="choiseBg" v-show="taskNotDone.length !== 0">Already Doing</h2>
+            <h2 :class="choiseBg" v-show="taskDone.length !== 0">Already Doing</h2>
 
-                <template v-for="(task) in taskNotDone" :key="task.id">
-                    <TaskNotDo :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
+                <template v-for="task in taskDone" :key="task.id">
+                    <TaskDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
                                @check="taskAlreadyDo"  @delete="deleteTask"/>
                 </template>
 
@@ -32,23 +32,19 @@
 <script>
 import TaskDone from "./TaskDone";
 import InputTask from "./InputTask";
-import TaskNotDo from "./TaskNotDo";
+import TaskNotDone from "./TaskNotDone";
 
 import {ref, computed, reactive } from 'vue';
 
 export default {
     name: "Todo",
     components:{
-            TaskDone,InputTask,TaskNotDo
+            TaskDone,InputTask,TaskNotDone
     },
     setup(){
         //TODO: add an Edit task function later
         // TODO: Group every same functionalities to this Application in a other file
-        // TODO: Use arrow function everywhere instead of normal function
-        //TODO: use an data object for my bg-color
-        const task = ref('')
         const tabList = ref([])
-        const editId = ref(0)
         const bgObject = reactive({
             Black: [
               'bg-black',
@@ -66,45 +62,27 @@ export default {
         })
         let choiseBg = ref([]);
 
-        const addTask = (id) =>{
-          if (id === 0){
+        const addTask = (task) =>{
             const index = tabList.value.length
-            if(task.value.length !== ""){
+            if(task.length !== ""){
               tabList.value.push({
                 id: (index+1),
-                description: task.value,
+                description: task,
                 date: getTaskDate(),
                 isDone: false
               })
-              task.value = ""
               return tabList
             }
             return false
-          }else {
-            editTask(id, task.value)
-          }
-
         }
         const deleteTask = (id) =>{
           const index = tabList.value.findIndex(elt => elt.id === id);
           tabList.value.splice(index, 1);
         }
-        const detectEdit = (id, addtask) =>{
-          task.value = addtask
-          editId.value = id
+        const detectEdit = (addtask) =>{
+          console.log(`task: ${ addtask }`);
         }
-        const editTask = (id, description) =>{
-          tabList.value = tabList.value.map(elt => {
-            if(elt.id === id){
-              return ref({
-                ...elt,
-                description: description
-              }).value
-            }
-            return elt
-          })
-          detectEdit(0,"");
-        }
+
         const changeStateToCheck = (id) => {
             tabList.value = tabList.value.map(elt => {
               if(elt.id === id){
@@ -128,10 +106,10 @@ export default {
           })
         }
 
-        const taskDone = computed(function () {
+        const taskNotDone = computed(function () {
             return tabList.value.filter(elt => elt.isDone === false)
         })
-        const taskNotDone = computed(function () {
+        const taskDone = computed(function () {
             return tabList.value.filter(elt => elt.isDone === true)
         })
         const getTaskDate = () => {
@@ -146,8 +124,8 @@ export default {
         }
 
         return{
-            task, taskDone, taskNotDone, deleteTask,addTask,detectEdit,
-            taskAlreadyDo, changeBg,editId,choiseBg
+            taskDone, taskNotDone, deleteTask,addTask,detectEdit,
+            taskAlreadyDo, changeBg,choiseBg
         }
     }
 }
