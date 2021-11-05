@@ -15,14 +15,14 @@
 
               <template v-for="task in taskNotDone" :key="task.id">
                   <TaskNotDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
-                            @check="taskAlreadyDo" @delete="deleteTask" @edit="detectEdit"/>
+                            @check="toggleTaskStatus" @delete="deleteTask" @edit="detectEdit"/>
               </template>
 
             <h2 :class="choiseBg" v-show="taskDone.length !== 0">Already Doing</h2>
 
                 <template v-for="task in taskDone" :key="task.id">
                     <TaskDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
-                               @check="taskAlreadyDo"  @delete="deleteTask"/>
+                               @check="toggleTaskStatus"  @delete="deleteTask"/>
                 </template>
 
         </div>
@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent} from "vue";
+import {defineComponent} from "vue";
 
 import TaskDone from "@/components/TaskDone.vue";
 import InputTask from "@/components/InputTask.vue";
@@ -45,8 +45,6 @@ export default defineComponent({
             TaskDone,InputTask,TaskNotDone
     },
     setup(){
-        //TODO: add an Edit task function later
-        // TODO: Group every same functionalities to this Application in a other file
         let tabList = reactive<TaskModel[]>([]);
         const bgObject = {
             Black: [
@@ -65,17 +63,15 @@ export default defineComponent({
         }
         let choiseBg = reactive<string[]>([]);
 
-        const addTask = (task: string) =>{
-            const index = tabList.length
+        const addTask = (task: string): void =>{
             if(task.length !== 0) {
               tabList.push({
-                id: (index + 1),
+                id: Date.now(),
                 description: task,
                 date: getTaskDate(),
                 isDone: false
               })
             }
-          console.log(tabList)
         }
         const deleteTask = (id: number) =>{
           const index = tabList.findIndex(elt => elt.id === id);
@@ -85,55 +81,35 @@ export default defineComponent({
           console.log(`task: ${ addtask }`);
         }
 
-        const changeStateToCheck = (id: number) => {
-            tabList = reactive(tabList.map(elt => {
-              if(elt.id === id){
-                return {
-                  ...elt,
-                  isDone: true
-                }
-              }
-              return { ...elt }
-            }))
-          console.log(tabList)
+        const changeStateToCheck = (id: number): void => {
+            tabList.find(elt => elt.id === id)!.isDone = true
         }
-        const changeStateToUncheck = (id: number) =>{
-          tabList = reactive(tabList.map(elt => {
-            if(elt.id === id){
-              return {
-                ...elt,
-                isDone: false
-              }
-            }
-            return { ...elt }
-          }))
-          console.log(tabList)
+        const changeStateToUncheck = (id: number): void =>{
+          tabList.find(elt => elt.id === id)!.isDone = false
         }
 
         const taskNotDone = computed( (): TaskModel[] => {
             return tabList.filter(elt => !elt.isDone)
         })
         const taskDone = computed((): TaskModel[] => {
+          console.log(tabList)
             return tabList.filter(elt => elt.isDone)
         })
-        const getTaskDate = () => {
+        const getTaskDate = (): string => {
             return `${ new Date().toDateString() } - ${ new Date().getHours() }h:${ new Date().getMinutes() }min:${ new Date().getSeconds() }s`
         }
-        const changeBg = (color:string = "Normal")=>{
+        const changeBg = (color:string = "Normal"): void =>{
           choiseBg = bgObject['Normal']
           console.log(color)
         }
-        const taskAlreadyDo = (id: number,eventType: string) => {
-
-          if(eventType === "checked")
-            changeStateToCheck(id)
-          else
-            changeStateToUncheck(id)
+        const toggleTaskStatus = (id: number,eventType: string): void => {
+          if(eventType === "checked") changeStateToCheck(id)
+          else changeStateToUncheck(id)
         }
 
         return{
             taskDone, taskNotDone, deleteTask,addTask,detectEdit,
-            taskAlreadyDo, changeBg,choiseBg
+            toggleTaskStatus, changeBg,choiseBg
         }
     }
 });

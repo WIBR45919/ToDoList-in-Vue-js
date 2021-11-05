@@ -40,10 +40,10 @@ export default defineComponent({
     },
     emits:['check','delete'],
   setup(props, { emit }){
-    const taskDo = () => {
+    const taskDo = (): void => {
       emit('check', props.id, "unchecked");
     }
-    const deleteTask = () => {
+    const deleteTask = (): void => {
       emit('delete', props.id);
     }
 

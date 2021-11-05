@@ -19,7 +19,7 @@ export default defineComponent({
     setup(props,{ emit }){
         const enter = ref<String>('')
 
-        const sendTask = ()=> {
+        const sendTask = (): void => {
             if (enter.value.trim().length !== 0) {
                 emit('addTask', enter.value);
                 enter.value = ""
