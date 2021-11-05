@@ -14,15 +14,13 @@
             <p :class="choiseBg" class="placeholder" v-show="taskNotDone.length === 0">Veuillez entrer une tache !</p>
 
               <template v-for="task in taskNotDone" :key="task.id">
-                  <TaskNotDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
-                            @check="toggleTaskStatus" @delete="deleteTask" @edit="detectEdit"/>
+                  <TaskNotDone :task="task" @check="toggleTaskStatus" @delete="deleteTask" @edit="detectEdit"/>
               </template>
 
             <h2 :class="choiseBg" v-show="taskDone.length !== 0">Already Doing</h2>
 
                 <template v-for="task in taskDone" :key="task.id">
-                    <TaskDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
-                               @check="toggleTaskStatus"  @delete="deleteTask"/>
+                    <TaskDone :task="task" @check="toggleTaskStatus"  @delete="deleteTask"/>
                 </template>
 
         </div>
@@ -35,7 +33,7 @@ import {defineComponent} from "vue";
 import TaskDone from "@/components/TaskDone.vue";
 import InputTask from "@/components/InputTask.vue";
 import TaskNotDone from "@/components/TaskNotDone.vue";
-import {TaskModel} from "@/TaskModel";
+import {TaskModel} from "@/components/types/TaskModel";
 
 import { computed, reactive } from 'vue';
 
@@ -81,18 +79,10 @@ export default defineComponent({
           console.log(`task: ${ addtask }`);
         }
 
-        const changeStateToCheck = (id: number): void => {
-            tabList.find(elt => elt.id === id)!.isDone = true
-        }
-        const changeStateToUncheck = (id: number): void =>{
-          tabList.find(elt => elt.id === id)!.isDone = false
-        }
-
         const taskNotDone = computed( (): TaskModel[] => {
             return tabList.filter(elt => !elt.isDone)
         })
         const taskDone = computed((): TaskModel[] => {
-          console.log(tabList)
             return tabList.filter(elt => elt.isDone)
         })
         const getTaskDate = (): string => {
@@ -102,9 +92,9 @@ export default defineComponent({
           choiseBg = bgObject['Normal']
           console.log(color)
         }
-        const toggleTaskStatus = (id: number,eventType: string): void => {
-          if(eventType === "checked") changeStateToCheck(id)
-          else changeStateToUncheck(id)
+        const toggleTaskStatus = (id: number): void => {
+          const toggledTask = tabList.find(elt => elt.id === id);
+          toggledTask!.isDone = !toggledTask!.isDone;
         }
 
         return{
