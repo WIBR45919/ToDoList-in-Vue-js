@@ -38,7 +38,7 @@ export default defineComponent({
     setup(props, { emit }){
 
       const taskDo = () => {
-        emit('check', props.task.id, "checked");
+        emit('check', props.task.id);
       }
       const deleteTask = () => {
         emit('delete', props.task.id);

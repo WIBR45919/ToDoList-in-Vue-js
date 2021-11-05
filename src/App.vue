@@ -12,6 +12,7 @@
 </template>
 
 <script lang="ts">
+
 import { defineComponent } from 'vue';
 import Todo from "./components/Todo.vue";
 

@@ -43,7 +43,7 @@ export default defineComponent({
             TaskDone,InputTask,TaskNotDone
     },
     setup(){
-        let tabList = reactive<TaskModel[]>([]);
+        const tabList = reactive<TaskModel[]>([]);
         const bgObject = {
             Black: [
               'bg-black',
@@ -72,7 +72,7 @@ export default defineComponent({
             }
         }
         const deleteTask = (id: number) =>{
-          const index = tabList.findIndex(elt => elt.id === id);
+          const index = tabList.findIndex((elt: TaskModel) => elt.id === id);
           tabList.splice(index, 1);
         }
         const detectEdit = (addtask: string) =>{
@@ -80,10 +80,10 @@ export default defineComponent({
         }
 
         const taskNotDone = computed( (): TaskModel[] => {
-            return tabList.filter(elt => !elt.isDone)
+            return tabList.filter((elt: TaskModel) => !elt.isDone)
         })
         const taskDone = computed((): TaskModel[] => {
-            return tabList.filter(elt => elt.isDone)
+            return tabList.filter((elt: TaskModel) => elt.isDone)
         })
         const getTaskDate = (): string => {
             return `${ new Date().toDateString() } - ${ new Date().getHours() }h:${ new Date().getMinutes() }min:${ new Date().getSeconds() }s`
@@ -93,7 +93,7 @@ export default defineComponent({
           console.log(color)
         }
         const toggleTaskStatus = (id: number): void => {
-          const toggledTask = tabList.find(elt => elt.id === id);
+          const toggledTask = tabList.find((elt: TaskModel) => elt.id === id);
           toggledTask!.isDone = !toggledTask!.isDone;
         }
 
