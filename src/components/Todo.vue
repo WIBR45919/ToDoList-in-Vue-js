@@ -1,6 +1,6 @@
 <template>
     <div class="content">
-        <div class="input" :class="choiseBg">
+        <div class="input" :class="chooseBg">
             <InputTask  @addTask="addTask" />
             <div class="theme">
                 <span title="theme aqua" @click="changeBg('Aqua')"></span>
@@ -9,15 +9,15 @@
                 <span title="theme white" @click="changeBg('Normal')"></span>
             </div>
         </div>
-        <div class="task" :class="choiseBg">
-            <h2 :class="choiseBg" v-show="taskNotDone.length !== 0">Task List</h2>
-            <p :class="choiseBg" class="placeholder" v-show="taskNotDone.length === 0">Veuillez entrer une tache !</p>
+        <div class="task" :class="chooseBg">
+            <h2 :class="chooseBg" v-show="taskNotDone.length !== 0">Task List</h2>
+            <p :class="chooseBg" class="placeholder" v-show="taskNotDone.length === 0">Veuillez entrer une tache !</p>
 
               <template v-for="task in taskNotDone" :key="task.id">
                   <TaskNotDone :task="task" @check="toggleTaskStatus" @delete="deleteTask" @edit="detectEdit"/>
               </template>
 
-            <h2 :class="choiseBg" v-show="taskDone.length !== 0">Already Doing</h2>
+            <h2 :class="chooseBg" v-show="taskDone.length !== 0">Already Doing</h2>
 
                 <template v-for="task in taskDone" :key="task.id">
                     <TaskDone :task="task" @check="toggleTaskStatus"  @delete="deleteTask"/>
@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "vue";
+import {defineComponent, onMounted} from "vue";
 
 import TaskDone from "@/components/TaskDone.vue";
 import InputTask from "@/components/InputTask.vue";
@@ -59,8 +59,13 @@ export default defineComponent({
             ],
             Normal: ['']
         }
-        let choiseBg = reactive<string[]>([]);
+        const persistTasks:string = 'ARRAY_OF_TASKS';
+        let chooseBg = reactive<string[]>(['']);
 
+        onMounted(()=>{
+          if(checkIfLocalStorageEmpty()) localStorage.setItem(persistTasks, '')
+          else Object.assign(tabList, JSON.parse(localStorage.getItem(persistTasks)!))
+        })
         const addTask = (task: string): void =>{
             if(task.length !== 0) {
               tabList.push({
@@ -70,13 +75,15 @@ export default defineComponent({
                 isDone: false
               })
             }
+            addTaskToLocalStorage()
         }
         const deleteTask = (id: number) =>{
           const index = tabList.findIndex((elt: TaskModel) => elt.id === id);
           tabList.splice(index, 1);
+          addTaskToLocalStorage()
         }
-        const detectEdit = (addtask: string) =>{
-          console.log(`task: ${ addtask }`);
+        const detectEdit = (addTask: string) =>{
+          console.log(`task: ${ addTask }`);
         }
 
         const taskNotDone = computed( (): TaskModel[] => {
@@ -88,18 +95,25 @@ export default defineComponent({
         const getTaskDate = (): string => {
             return `${ new Date().toDateString() } - ${ new Date().getHours() }h:${ new Date().getMinutes() }min:${ new Date().getSeconds() }s`
         }
-        const changeBg = (color:string = "Normal"): void =>{
-          choiseBg = bgObject['Normal']
+        const addTaskToLocalStorage = (): void => {
+          localStorage.setItem(persistTasks, JSON.stringify(tabList))
+        }
+        const checkIfLocalStorageEmpty = (): boolean =>{
+          return localStorage.getItem(persistTasks) === null
+        }
+        const changeBg = (color:string = "Black"): void =>{
+          chooseBg = bgObject.Aqua
           console.log(color)
         }
         const toggleTaskStatus = (id: number): void => {
           const toggledTask = tabList.find((elt: TaskModel) => elt.id === id);
           toggledTask!.isDone = !toggledTask!.isDone;
+          addTaskToLocalStorage()
         }
 
         return{
             taskDone, taskNotDone, deleteTask,addTask,detectEdit,
-            toggleTaskStatus, changeBg,choiseBg
+            toggleTaskStatus, changeBg,chooseBg
         }
     }
 });
