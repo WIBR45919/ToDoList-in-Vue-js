@@ -1,6 +1,6 @@
 <template>
     <div class="content">
-        <div class="input" :class="choiseBg">
+        <div class="input" :class="chooseBg">
             <InputTask  @addTask="addTask" />
             <div class="theme">
                 <span title="theme aqua" @click="changeBg('Aqua')"></span>
@@ -9,43 +9,43 @@
                 <span title="theme white" @click="changeBg('Normal')"></span>
             </div>
         </div>
-        <div class="task" :class="choiseBg">
-            <h2 :class="choiseBg" v-show="taskNotDone.length !== 0">Task List</h2>
-            <p :class="choiseBg" class="placeholder" v-show="taskNotDone.length === 0">Veuillez entrer une tache !</p>
+        <div class="task" :class="chooseBg">
+            <h2 :class="chooseBg" v-show="taskNotDone.length !== 0">Task List</h2>
+            <p :class="chooseBg" class="placeholder" v-show="taskNotDone.length === 0">Veuillez entrer une tache !</p>
 
               <template v-for="task in taskNotDone" :key="task.id">
-                  <TaskNotDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
-                            @check="taskAlreadyDo" @delete="deleteTask" @edit="detectEdit"/>
+                  <TaskNotDone :task="task" @check="toggleTaskStatus" @delete="deleteTask" @edit="detectEdit"/>
               </template>
 
-            <h2 :class="choiseBg" v-show="taskDone.length !== 0">Already Doing</h2>
+            <h2 :class="chooseBg" v-show="taskDone.length !== 0">Already Doing</h2>
 
                 <template v-for="task in taskDone" :key="task.id">
-                    <TaskDone :id="task.id" :description="task.description" :date="task.date" :isDone="task.isDone"
-                               @check="taskAlreadyDo"  @delete="deleteTask"/>
+                    <TaskDone :task="task" @check="toggleTaskStatus"  @delete="deleteTask"/>
                 </template>
 
         </div>
     </div>
 </template>
 
-<script>
-import TaskDone from "./TaskDone";
-import InputTask from "./InputTask";
-import TaskNotDone from "./TaskNotDone";
+<script lang="ts">
 
-import {ref, computed, reactive } from 'vue';
+import {defineComponent, onMounted, onUnmounted} from "vue";
+import { computed, reactive } from 'vue';
 
-export default {
-    name: "Todo",
+import TaskDone from "@/components/TaskDone.vue";
+import InputTask from "@/components/InputTask.vue";
+import TaskNotDone from "@/components/TaskNotDone.vue";
+
+import {TaskModel} from "@/components/types/TaskModel";
+
+export default defineComponent({
+    name: 'Todo',
     components:{
             TaskDone,InputTask,TaskNotDone
     },
     setup(){
-        //TODO: add an Edit task function later
-        // TODO: Group every same functionalities to this Application in a other file
-        const tabList = ref([])
-        const bgObject = reactive({
+        const tabList = reactive<TaskModel[]>([]);
+        const bgObject = {
             Black: [
               'bg-black',
               'text-black'
@@ -58,77 +58,72 @@ export default {
               'bg-aqua',
               'text-aqua'
             ],
-            Normal: ''
-        })
-        let choiseBg = ref([]);
+            Normal: ['']
+        }
+        const persistTasks:string = 'ARRAY_OF_TASKS';
+        let chooseBg = reactive<string[]>(['']);
 
-        const addTask = (task) =>{
-            const index = tabList.value.length
-            if(task.length !== ""){
-              tabList.value.push({
-                id: (index+1),
+        onMounted(()=>{
+          initializeTaskList()
+        })
+        const addTask = (task: string): void =>{
+            if(task.length !== 0) {
+              tabList.push({
+                id: Date.now(),
                 description: task,
                 date: getTaskDate(),
                 isDone: false
               })
-              return tabList
             }
-            return false
+            addTaskToLocalStorage()
         }
-        const deleteTask = (id) =>{
-          const index = tabList.value.findIndex(elt => elt.id === id);
-          tabList.value.splice(index, 1);
+        const deleteTask = (id: number) =>{
+          const index = tabList.findIndex((elt: TaskModel) => elt.id === id);
+          tabList.splice(index, 1);
+          addTaskToLocalStorage()
         }
-        const detectEdit = (addtask) =>{
-          console.log(`task: ${ addtask }`);
+        const detectEdit = (addTask: string) =>{
+          console.log(`task: ${ addTask }`);
         }
 
-        const changeStateToCheck = (id) => {
-            tabList.value = tabList.value.map(elt => {
-              if(elt.id === id){
-                return ref({
-                  ...elt,
-                  isDone: true
-                }).value
-              }
-              return elt
-            })
-        }
-        const changeStateToUncheck = (id) =>{
-          tabList.value = tabList.value.map(elt => {
-            if(elt.id === id){
-              return ref({
-                ...elt,
-                isDone: false
-              }).value
-            }
-            return elt
-          })
-        }
-
-        const taskNotDone = computed(function () {
-            return tabList.value.filter(elt => elt.isDone === false)
+        const taskNotDone = computed( (): TaskModel[] => {
+            return tabList.filter((elt: TaskModel) => !elt.isDone)
         })
-        const taskDone = computed(function () {
-            return tabList.value.filter(elt => elt.isDone === true)
+        const taskDone = computed((): TaskModel[] => {
+            return tabList.filter((elt: TaskModel) => elt.isDone)
         })
-        const getTaskDate = () => {
+        const getTaskDate = (): string => {
             return `${ new Date().toDateString() } - ${ new Date().getHours() }h:${ new Date().getMinutes() }min:${ new Date().getSeconds() }s`
         }
-        const changeBg = (color)=>{
-          choiseBg.value = bgObject[color]
+        const addTaskToLocalStorage = (): void => {
+          localStorage.setItem(persistTasks, JSON.stringify(tabList))
         }
-        const taskAlreadyDo = (id,eventType) => {
-          if(eventType === "checked") changeStateToCheck(id)
-          else changeStateToUncheck(id)
+        const checkIfLocalStorageEmpty = (): boolean =>{
+          return localStorage.getItem(persistTasks) === null
         }
+        const initializeTaskList = (): void =>{
+          if(checkIfLocalStorageEmpty()) localStorage.setItem(persistTasks, '');
+          else Object.assign(tabList, JSON.parse(localStorage.getItem(persistTasks) || '[]'));
+        }
+        const changeBg = (color:string = "Black"): void =>{
+          chooseBg = bgObject.Aqua
+          console.log(color)
+        }
+        const toggleTaskStatus = (id: number): void => {
+          const toggledTask = tabList.find((elt: TaskModel) => elt.id === id);
+          toggledTask!.isDone = !toggledTask!.isDone;
+          addTaskToLocalStorage()
+        }
+        onUnmounted(()=>{
+          localStorage.setItem(persistTasks, '')
+        })
 
         return{
             taskDone, taskNotDone, deleteTask,addTask,detectEdit,
-            taskAlreadyDo, changeBg,choiseBg
+            toggleTaskStatus, changeBg,chooseBg
         }
     }
-}
+});
 </script>
 
 <style scoped>

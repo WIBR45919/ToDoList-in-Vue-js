@@ -2,10 +2,10 @@
   <div class="task">
       <div class="todo">
           <div class="check">
-              <input type="checkbox" :checked="isDone" @change="taskDo">
+              <input type="checkbox" :checked="task.isDone" @change="taskDo">
           </div>
           <div class="description-task">
-              <p> {{ description }} <span class="date">{{ date }}</span></p>
+              <p> {{ task.description }} <span class="date">{{ task.date }}</span></p>
           </div>
           <div class="actions">
             <span title="Time" id="Time">
@@ -22,51 +22,38 @@
   </div>
 </template>
 
-<script>
-    export default {
-        name: "TaskNotDone",
-        props:{
-            id:{
-                type: Number,
-                required: true,
-                defaultValue: 0,
-            },
-            description:{
-                type: String,
-                required: true,
-                defaultValue: ''
-            },
-            date:{
-                type: String,
-                required: true,
-                defaultValue: ''
-            },
-            isDone:{
-                type: Boolean,
-                required: true,
-                defaultValue: false
-            }
-        },
-        emits:['check','delete','edit'],
-        setup(props, { emit }){
+<script lang="ts">
+import {defineComponent, PropType} from "vue";
+import {TaskModel} from "@/components/types/TaskModel";
 
-          const taskDo = () => {
-            emit('check', props.id, "checked");
-          }
-          const deleteTask = () => {
-            emit('delete', props.id);
-          }
-          const editTask = () => {
-            emit('edit',props.description);
-          }
+export default defineComponent({
+    name: "TaskNotDone",
+    props:{
+      task:{
+        type:  Object as PropType<TaskModel>,
+        required: true
+      }
+    },
+    emits:['check','delete','edit'],
+    setup(props, { emit }){
 
-            return{
-              taskDo,
-              deleteTask,
-              editTask,
-            }
+      const taskDo = () => {
+        emit('check', props.task.id);
+      }
+      const deleteTask = () => {
+        emit('delete', props.task.id);
+      }
+      const editTask = () => {
+        emit('edit',props.task.description);
+      }
+
+        return{
+          taskDo,
+          deleteTask,
+          editTask,
         }
     }
+});
 </script>
 
 <style scoped>
