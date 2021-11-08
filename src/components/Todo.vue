@@ -28,14 +28,15 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted} from "vue";
+
+import {defineComponent, onMounted, onUnmounted} from "vue";
+import { computed, reactive } from 'vue';
 
 import TaskDone from "@/components/TaskDone.vue";
 import InputTask from "@/components/InputTask.vue";
 import TaskNotDone from "@/components/TaskNotDone.vue";
-import {TaskModel} from "@/components/types/TaskModel";
 
-import { computed, reactive } from 'vue';
+import {TaskModel} from "@/components/types/TaskModel";
 
 export default defineComponent({
     name: 'Todo',
@@ -63,8 +64,7 @@ export default defineComponent({
         let chooseBg = reactive<string[]>(['']);
 
         onMounted(()=>{
-          if(checkIfLocalStorageEmpty()) localStorage.setItem(persistTasks, '')
-          else Object.assign(tabList, JSON.parse(localStorage.getItem(persistTasks)!))
+          initializeTaskList()
         })
         const addTask = (task: string): void =>{
             if(task.length !== 0) {
@@ -101,6 +101,10 @@ export default defineComponent({
         const checkIfLocalStorageEmpty = (): boolean =>{
           return localStorage.getItem(persistTasks) === null
         }
+        const initializeTaskList = (): void =>{
+          if(checkIfLocalStorageEmpty()) localStorage.setItem(persistTasks, '');
+          else Object.assign(tabList, JSON.parse(localStorage.getItem(persistTasks) || '[]'));
+        }
         const changeBg = (color:string = "Black"): void =>{
           chooseBg = bgObject.Aqua
           console.log(color)
@@ -110,6 +114,9 @@ export default defineComponent({
           toggledTask!.isDone = !toggledTask!.isDone;
           addTaskToLocalStorage()
         }
+        onUnmounted(()=>{
+          localStorage.setItem(persistTasks, '')
+        })
 
         return{
             taskDone, taskNotDone, deleteTask,addTask,detectEdit,

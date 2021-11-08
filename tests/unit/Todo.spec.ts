@@ -3,6 +3,13 @@ import Todo from "@/components/Todo.vue";
 
 describe('Todo component tests', ()=>{
 
+        beforeEach(()=>{
+            localStorage.removeItem('ARRAY_OF_TASKS')
+        })
+        afterEach(()=>{
+            localStorage.removeItem('ARRAY_OF_TASKS')
+        })
+
     it('If Todo component has always InputTask component', ()=>{
         const wrapper = mount(Todo)
         expect(wrapper.findComponent({ name: 'InputTask' }).exists()).toBe(true)
@@ -19,8 +26,18 @@ describe('Todo component tests', ()=>{
         expect(wrapper.findComponent({ name: 'TaskNotDone' }).props('task').isDone).toBeFalsy()
         expect(wrapper.findAllComponents({ name: 'TaskDone' }).length).toBe(0)
         expect(wrapper.findAllComponents({ name: 'TaskNotDone' }).length).toBe(1)
-
+        expect(localStorage.getItem('ARRAY_OF_TASKS')).toMatch(`[{"id":12092001,"description":"Task 1","date":"Mon Nov 08 2021 - ${ new Date().getHours() }h:${ new Date().getMinutes() }min:${ new Date().getSeconds() }s","isDone":false}]`)
     })
+
+    it('check local storage status before and after deletion', async ()=> {
+        const wrapper = mount(Todo)
+        expect(localStorage.getItem('ARRAY_OF_TASKS')).toMatch("")
+        Date.now = jest.fn(()=> 12092001)
+        await wrapper.vm.addTask('Task 1')
+        expect(localStorage.getItem('ARRAY_OF_TASKS')).toMatch(`[{"id":12092001,"description":"Task 1","date":"Mon Nov 08 2021 - ${ new Date().getHours() }h:${ new Date().getMinutes() }min:${ new Date().getSeconds() }s","isDone":false}]`)
+        await wrapper.vm.deleteTask(12092001)
+        expect(localStorage.getItem('ARRAY_OF_TASKS')).toMatch("[]")
+    });
 
     it('if this should display the tasks already done', async ()=>{
         const wrapper = mount(Todo)
@@ -44,8 +61,6 @@ describe('Todo component tests', ()=>{
 
     it('if this should display the tasks not yet done and those already done', async ()=>{
         const wrapper = mount(Todo)
-        expect(wrapper.findComponent({ name: 'TaskDone' }).exists()).toBe(false)
-        expect(wrapper.findComponent({ name: 'TaskNotDone' }).exists()).toBe(false)
         Date.now = jest.fn(()=> 12092001)
         await wrapper.vm.addTask('Task 5')
         Date.now = jest.fn(()=> 12092002)
