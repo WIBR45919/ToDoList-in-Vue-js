@@ -1,5 +1,5 @@
 <template>
-<div class="todo do">
+<div class="todo td-shadow opacity-50 bg-gray-100">
     <div class="check">
         <input type="checkbox" @change="taskDo" :checked="task.isDone">
     </div>
@@ -44,14 +44,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
-.line-through {
-    text-decoration: line-through;
-}
-.do{
-    opacity: 0.5;
-    background: #e0e0e0;
-    box-shadow: inset 20px 20px 40px #bebebe,
-    inset -20px -20px 40px #ffffff;
-}
 </style>

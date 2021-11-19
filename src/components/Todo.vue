@@ -1,23 +1,23 @@
 <template>
     <div class="content">
-        <div class="input" :class="chooseBg">
+        <div class="flex justify-center items-center p-3.5 h-1/5" :class="chooseBg">
             <InputTask  @addTask="addTask" />
             <div class="theme">
-                <span title="theme aqua" @click="changeBg('Aqua')"></span>
-                <span title="theme purple" @click="changeBg('Purple')"></span>
-                <span title="theme black" @click="changeBg('Black')"></span>
-                <span title="theme white" @click="changeBg('Normal')"></span>
+                <span class="bg-blue-400" title="theme Aqua" @click="changeBg('Aqua')"></span>
+                <span class="bg-purple-600" title="theme purple" @click="changeBg('Purple')"></span>
+                <span class="bg-black" title="theme black" @click="changeBg('Black')"></span>
+                <span class="bg-gray-200" title="theme white" @click="changeBg('Normal')"></span>
             </div>
         </div>
-        <div class="task" :class="chooseBg">
-            <h2 :class="chooseBg" v-show="taskNotDone.length !== 0">Task List</h2>
-            <p :class="chooseBg" class="placeholder" v-show="taskNotDone.length === 0">Veuillez entrer une tache !</p>
+        <div class="px-3.5 py-2" :class="chooseBg">
+            <h2 :class="chooseBg" class="text-green-500 text-2xl" v-show="taskNotDone.length !== 0">Task List</h2>
+            <p :class="chooseBg" class="text-center text-gray-600 text-lg" v-show="taskNotDone.length === 0">Veuillez entrer une tache !</p>
 
               <template v-for="task in taskNotDone" :key="task.id">
                   <TaskNotDone :task="task" @check="toggleTaskStatus" @delete="deleteTask" @edit="detectEdit"/>
               </template>
 
-            <h2 :class="chooseBg" v-show="taskDone.length !== 0">Already Doing</h2>
+            <h2 :class="chooseBg" class="text-green-500 pt-10 text-2xl" v-show="taskDone.length !== 0">Already Doing</h2>
 
                 <template v-for="task in taskDone" :key="task.id">
                     <TaskDone :task="task" @check="toggleTaskStatus"  @delete="deleteTask"/>
@@ -29,7 +29,7 @@
 
 <script lang="ts">
 
-import {defineComponent, onMounted, onUnmounted} from "vue";
+import {defineComponent, onMounted} from "vue";
 import { computed, reactive } from 'vue';
 
 import TaskDone from "@/components/TaskDone.vue";
@@ -51,17 +51,17 @@ export default defineComponent({
               'text-black'
             ],
             Purple:  [
-              'bg-purple',
-              'text-purple'
+              'bg-purple-600',
+              'text-purple-600'
             ],
             Aqua:  [
-              'bg-aqua',
-              'text-aqua'
+              'bg-blue-400',
+              'text-aqua-400'
             ],
             Normal: ['']
         }
         const persistTasks:string = 'ARRAY_OF_TASKS';
-        let chooseBg = reactive<string[]>(['']);
+        let chooseBg = reactive<string[]>([]);
 
         onMounted(()=>{
           initializeTaskList()
@@ -106,17 +106,13 @@ export default defineComponent({
           else Object.assign(tabList, JSON.parse(localStorage.getItem(persistTasks) || '[]'));
         }
         const changeBg = (color:string = "Black"): void =>{
-          chooseBg = bgObject.Aqua
-          console.log(color)
+          chooseBg[0] = bgObject[color as keyof {}]
         }
         const toggleTaskStatus = (id: number): void => {
           const toggledTask = tabList.find((elt: TaskModel) => elt.id === id);
           toggledTask!.isDone = !toggledTask!.isDone;
           addTaskToLocalStorage()
         }
-        onUnmounted(()=>{
-          localStorage.setItem(persistTasks, '')
-        })
 
         return{
             taskDone, taskNotDone, deleteTask,addTask,detectEdit,
@@ -128,63 +124,4 @@ export default defineComponent({
 
 <style scoped>
 
-.input{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    height: 20%;
-}
-.theme{
-    width: 15%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-    .theme span{
-        display: inline-block;
-        width: 20px;height: 20px;border-radius: 50%;
-        cursor: pointer;
-    }
-    .theme span:nth-child(1){
-        background-color: aqua;
-    }
-    .theme span:nth-child(2){
-        background-color: purple;
-    }
-    .theme span:nth-child(3){
-        background-color: black;
-    }
-    .theme span:nth-child(4){
-      background-color: whitesmoke;
-    }
-    .task{
-        padding: 10px 15px;
-    }
-    .task h2{
-        color: #3f7676;
-    }
-    .placeholder{
-      text-align: center;
-      color: gray;
-      font-size: 15px;
-    }
-    .bg-black{
-      background-color: #131313;
-    }
-    .bg-purple{
-      background-color: #6724f1;
-    }
-    .bg-aqua{
-      background-color: #9ae7cc;
-    }
-    .text-black{
-      color: white!important;
-    }
-    .text-purple{
-      color: white!important;
-    }
-    .text-aqua{
-      color: #282626!important;
-    }
 </style>

@@ -1,11 +1,12 @@
 <template>
-  <div class="parent">
-    <div class="bg">
-      <svg xmlns="http://www.w3.org/2000/svg">
+  <div class="flex justify-center items-center relative">
+    <div class="w-4/5 fixed top-4/5 left-1/2 flex items-center justify-center
+     z-1- transform -translate-x-2/4 translate-y-35" style="top: 35%">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-3/5">
         <text x="0" y="100">TODO LIST</text>
       </svg>
     </div>
-    <div class="content">
+    <div class="absolute bg-transparent rounded-sm content mx-0 my-7 w-4/5 z-10">
       <Todo/>
     </div>
   </div>
@@ -16,6 +17,7 @@
 import { defineComponent } from 'vue';
 import Todo from "./components/Todo.vue";
 
+
 export default defineComponent({
   name: 'App',
   components: {
@@ -25,10 +27,6 @@ export default defineComponent({
 </script>
 
 <style>
-*{
-  margin: 0;
-  padding: 0;
-}
 #app {
   font-family: Roboto,Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -38,28 +36,9 @@ export default defineComponent({
   position: relative;
   transition: all 0.3s;
 }
-.parent{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-.parent .bg{
-  width: 80%;
-  position: fixed;
-  top: 35%;
-  left: 50%;
-  transform: translate(-50%,35%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: -1;
-}
+
 @media screen and (min-width: 800px){
-  .parent .bg svg{
-    width: 60%;
-  }
-  .parent .bg svg text{
+   svg text{
     font-size: 9vw;
     font-weight: bold;
     fill: none;
@@ -79,16 +58,10 @@ export default defineComponent({
   }
 }
 .content{
-  position: absolute;
-  width: 80vw;
-  margin: 25px 0;
-  border-radius: 7px;
   top: 15%;
   left: 5%;
-  background: transparent;
   box-shadow:  20px 20px 40px #bebebe,
   -20px -20px 40px #bebebe;
-  z-index: 2;
 }
 @media screen and (max-width: 790px){
   .parent .bg{
@@ -97,7 +70,6 @@ export default defineComponent({
 }
 h2{
   color: #3f7676;
-  font-family: Roboto;
 }
 .todo{
   display: flex;
