@@ -1,10 +1,10 @@
 <template>
 <div class="todo do">
     <div class="check">
-        <input type="checkbox" @change="taskDo" :checked="isDone">
+        <input type="checkbox" @change="taskDo" :checked="task.isDone">
     </div>
     <div class="description-task">
-        <p class="line-through"> {{ description }}  <span class="date">{{ date }}</span></p>
+        <p class="line-through"> {{ task.description }}  <span class="date">{{ task.date }}</span></p>
     </div>
     <div class="actions">
         <span title="Delete" @click="deleteTask" id="delete">
@@ -14,43 +14,33 @@
 </div>
 </template>
 
-<script>
-    export default {
-        name: "TaskDone",
-        props:{
-            id:{
-                type: Number,
-                required: true
-            },
-            description:{
-                type: String,
-                required: true
-            },
-           date:{
-                type: String,
-                required: true
-            },
-            isDone:{
-                type: Boolean,
-                required: true,
-                defaultValue: true
-            }
-        },
-        emits:['check','delete'],
-      setup(props, { emit }){
-        const taskDo = () => {
-          emit('check', props.id, "unchecked");
-        }
-        const deleteTask = () => {
-          emit('delete', props.id);
-        }
+<script lang="ts">
+import {defineComponent, PropType} from "vue";
+import {TaskModel} from "@/components/types/TaskModel";
 
-        return{
-          taskDo,
-          deleteTask
+export default defineComponent({
+    name: "TaskDone",
+    props:{
+        task:{
+          type:  Object as PropType<TaskModel>,
+          required: true
         }
-      }
+    },
+    emits:['check','delete'],
+  setup(props, { emit }){
+    const taskDo = (): void => {
+      emit('check', props.task.id);
     }
+    const deleteTask = (): void => {
+      emit('delete', props.task.id);
+    }
+
+    return{
+      taskDo,
+      deleteTask
+    }
+  }
+});
 </script>
 
 <style scoped>
