@@ -1,10 +1,10 @@
 <template>
   <div class="task">
       <div class="todo">
-          <div class="check">
+          <div class="p-2.5">
               <input type="checkbox" :checked="task.isDone" @change="taskDo">
           </div>
-          <div class="description-task">
+          <div class="text-black text-lg">
               <p> {{ task.description }} <span class="date">{{ task.date }}</span></p>
           </div>
           <div class="actions">

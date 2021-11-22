@@ -37,11 +37,11 @@ export default defineComponent({
   transition: all 0.3s;
 }
 
-@media screen and (min-width: 800px){
+@media screen and (min-width: 768px){
    svg text{
     font-size: 9vw;
-    font-weight: bold;
     fill: none;
+    font-weight: bold;
     stroke: black;
     stroke-width: 3px;
     stroke-linecap: round;
@@ -59,52 +59,14 @@ export default defineComponent({
 }
 .content{
   top: 15%;
-  left: 5%;
+  left: 10%;
   box-shadow:  20px 20px 40px #bebebe,
   -20px -20px 40px #bebebe;
 }
-@media screen and (max-width: 790px){
-  .parent .bg{
-    display: none;
-  }
-}
-h2{
-  color: #3f7676;
-}
+
 .todo{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 5px 0px 0px 0px;
   background: linear-gradient(145deg, #f0f0f0, #cacaca);
   box-shadow:  20px 20px 40px #bebebe,
   -20px -20px 40px #ffffff;
-  border-radius: 3px;
-  padding: 10px;
-  transition: all 0.3s;
-}
-.todo .check{
-  padding: 10px;
-}
-.todo .description-task{
-  color: black;
-  font-size: 17px;
-  font-family: Roboto;
-}
-.todo .description-task .date{
-  color: gray;
-  font-size: 13px;
-  display: block;
-  float: right;
-  padding: 3px 10px;
-}
-.todo .actions{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.todo .actions span{
-  cursor: pointer;
-  margin: 0 5px;
 }
 </style>

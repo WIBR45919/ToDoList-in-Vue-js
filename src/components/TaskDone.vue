@@ -3,7 +3,7 @@
     <div class="check">
         <input type="checkbox" @change="taskDo" :checked="task.isDone">
     </div>
-    <div class="description-task">
+    <div class="text-black text-lg">
         <p class="line-through"> {{ task.description }}  <span class="date">{{ task.date }}</span></p>
     </div>
     <div class="actions">
