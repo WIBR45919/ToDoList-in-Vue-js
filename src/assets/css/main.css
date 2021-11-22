@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .theme{
+        @apply w-1/2 flex justify-around items-center
+    }
+    .theme span{
+        @apply inline-block w-6 h-6 rounded-2xl cursor-pointer
+    }
+    .td-shadow{
+        box-shadow: inset 20px 20px 40px #bebebe,
+        inset -20px -20px 40px #ffffff;
+    }
+    input[type="text"]{
+        @apply outline-none h-12 w-full border-none text-gray-600 bg-gray-300 py-0 pr-11 pl-3 rounded-2xl
+        text-lg border-b-2 border-solid border-blue-300
+    }
+    h2{
+        @apply text-green-600
+    }
+    .todo{
+        @apply flex justify-between items-center m-0 mt-2 rounded-sm p-2.5 transition-all duration-300
+    }
+    .date{
+        @apply text-gray-500 text-sm block float-right px-2.5 py-0.5
+    }
+    .actions{
+        @apply flex justify-center items-center
+    }
+    .actions span{
+        @apply cursor-pointer my-0 mx-1.5
+    }
+    svg text{
+        display: none;
+    }
+    @screen md {
+        .theme span{
+            @apply inline-block w-6 h-6 rounded-2xl cursor-pointer
+        }
+        svg text{
+            display: block;
+        }
+        .theme{
+            @apply w-1/6 mt-2
+        }
+    }
+}
