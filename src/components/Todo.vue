@@ -1,6 +1,6 @@
 <template>
     <div class="content">
-        <div class="flex justify-center items-center p-3.5 h-1/5" :class="chooseBg">
+        <div class="flex justify-center items-center flex-col md:flex-row p-3.5 h-1/5" :class="chooseBg">
             <InputTask  @addTask="addTask" />
             <div class="theme">
                 <span class="bg-blue-400" title="theme Aqua" @click="changeBg('Aqua')"></span>

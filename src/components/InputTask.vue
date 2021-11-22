@@ -1,5 +1,5 @@
 <template>
-   <div class="flex p-2.5 w-3/4 relative">
+   <div class="flex p-2.5 w-full relative md:w-3/4">
        <input class="b-b" type="text" required placeholder="entrez une tache" v-model="enter" @keyup.enter="sendTask">
           <button type="button" @click="sendTask" title="Ajouter a la liste des taches">
            <span>
