@@ -9,7 +9,7 @@
                 <span class="bg-gray-200" title="theme white" @click="changeBg('Normal')"></span>
             </div>
         </div>
-        <div class="px-3.5 py-2" :class="chooseBg">
+        <div class="list px-3.5 py-2" :class="chooseBg">
             <h2 :class="chooseBg" class="text-green-500 text-2xl" v-show="taskNotDone.length !== 0">Task List</h2>
             <p :class="chooseBg" class="text-center text-gray-600 text-lg" v-show="taskNotDone.length === 0">Veuillez entrer une tache !</p>
 
@@ -22,7 +22,6 @@
                 <template v-for="task in taskDone" :key="task.id">
                     <TaskDone :task="task" @check="toggleTaskStatus"  @delete="deleteTask"/>
                 </template>
-
         </div>
     </div>
 </template>

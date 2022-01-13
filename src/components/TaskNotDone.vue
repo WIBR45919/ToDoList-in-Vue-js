@@ -1,7 +1,7 @@
 <template>
   <div class="task">
       <div class="todo">
-          <div class="p-2.5">
+          <div class="check p-2.5">
               <input type="checkbox" :checked="task.isDone" @change="taskDo">
           </div>
           <div class="text-black text-lg">
